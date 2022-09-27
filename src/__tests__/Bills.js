@@ -20,7 +20,6 @@ const onNavigate = (pathname) => {
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
-
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
@@ -47,7 +46,7 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)
     })
 
-    test("Then I click on new Bill redirect new Bill page", async () => {
+    test("Then I click on new Bill should redirect new Bill page", async () => {
       document.body.innerHTML = BillsUI({ data: bills })
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
@@ -67,5 +66,27 @@ describe("Given I am connected as an employee", () => {
 
       expect(window.location.href).toContain('#employee/bill/new')
     })
+
+    /**
+     * TODO: write a test for the modal
+     */
+    // test("Then I click on eye icon should open modal image", async () => {
+    //   document.body.innerHTML = BillsUI({ data: bills })
+    //   Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+    //   window.localStorage.setItem('user', JSON.stringify({
+    //     type: 'Employee'
+    //   }))
+
+    //   const root = document.createElement("div")
+    //   root.setAttribute("id", "root")
+    //   document.body.append(root)
+    //   router()
+
+    //   // window.onNavigate(ROUTES_PATH.Bills)
+
+    //   await waitFor(() => screen.getByTestId('icon-eye'))
+    //   const iconEye = screen.getByTestId('icon-eye')
+    //   userEvent.click(iconEye);
+    // });
   })
 })
