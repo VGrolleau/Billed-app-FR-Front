@@ -9,24 +9,28 @@ export default class NewBill {
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
     formNewBill.addEventListener("submit", this.handleSubmit)
     const file = this.document.querySelector(`input[data-testid="file"]`)
-    file.accept = ".png, .jpeg, .jpg"
     file.addEventListener("change", this.handleChangeFile)
     this.fileUrl = null
     this.fileName = null
     this.billId = null
-    this.fileExtensions = [".png", ".jpeg", ".jpg"];
     new Logout({ document, localStorage, onNavigate })
   }
 
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    const fileExtension = file.name.split('.').pop();
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length - 1]
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
+
+    if (!(fileExtension === 'jpg' || fileExtension === 'jpeg' || fileExtension === 'png')) {
+      console.error('Seuls les fichiers jpg, jpeg et png sont acceptés')
+      return
+    }
 
     this.store
       .bills()
