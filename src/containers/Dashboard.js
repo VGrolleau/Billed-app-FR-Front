@@ -150,12 +150,7 @@ export default class {
     }
 
     bills.forEach(bill => {
-      /**
-       * TODO:
-       * modifier le lien id
-       */
-      $(`#open-bill${bill.id}`).click((e) => {
-        console.log("click", bill.id);
+      $(`#status-bills-container${this.index} #open-bill${bill.id}`).click((e) => {
         this.handleEditTicket(e, bill, bills)
       })
     })
