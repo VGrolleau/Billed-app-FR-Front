@@ -20,18 +20,18 @@ const onNavigate = (pathname) => {
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
-      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock });
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
-      }))
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.Bills)
-      await waitFor(() => screen.getByTestId('icon-window'))
-      const windowIcon = screen.getByTestId('icon-window')
-      //to-do write expect expression
+      }));
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.append(root);
+      router();
+      window.onNavigate(ROUTES_PATH.Bills);
+      await waitFor(() => screen.getByTestId('icon-window'));
+      const windowIcon = screen.getByTestId('icon-window');
+      expect(windowIcon.classList.contains('active-icon')).toBe(true);
     })
 
     test("Then bills should be ordered from earliest to latest", async () => {
@@ -82,11 +82,15 @@ describe("Given I am connected as an employee", () => {
     //   document.body.append(root)
     //   router()
 
-    //   // window.onNavigate(ROUTES_PATH.Bills)
+    //   window.onNavigate(ROUTES_PATH.Bills)
 
     //   await waitFor(() => screen.getByTestId('icon-eye'))
     //   const iconEye = screen.getByTestId('icon-eye')
     //   userEvent.click(iconEye);
+
+    //   await waitFor(() => { screen.getByTestId('modaleFile') })
+    //   const modal = screen.getByTestId('modaleFile')
+    //   expect(modal).toBeTruthy()
     // });
   })
 })
