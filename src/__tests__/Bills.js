@@ -70,27 +70,32 @@ describe("Given I am connected as an employee", () => {
     /**
      * TODO: write a test for the modal
      */
-    // test("Then I click on eye icon should open modal image", async () => {
-    //   document.body.innerHTML = BillsUI({ data: bills })
-    //   Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-    //   window.localStorage.setItem('user', JSON.stringify({
-    //     type: 'Employee'
-    //   }))
+    test("Then I click on eye icon should open modal image", async () => {
+      // document.body.innerHTML = BillsUI({ data: bills });
+      // Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+      // window.localStorage.setItem('user', JSON.stringify({
+      //   type: 'Employee'
+      // }));
 
-    //   const root = document.createElement("div")
-    //   root.setAttribute("id", "root")
-    //   document.body.append(root)
-    //   router()
+      // const root = document.createElement("div");
+      // root.setAttribute("id", "root");
+      // document.body.append(root);
+      // router();
 
-    //   window.onNavigate(ROUTES_PATH.Bills)
+      // window.onNavigate(ROUTES_PATH.Bills);
 
-    //   await waitFor(() => screen.getByTestId('icon-eye'))
-    //   const iconEye = screen.getByTestId('icon-eye')
-    //   userEvent.click(iconEye);
+      // const billsClass = new Bills({ document, onNavigate, store: mockStore, localStorage: null });
+      // const handleClickIconEye = await billsClass.handleClickIconEye();
 
-    //   await waitFor(() => { screen.getByTestId('modaleFile') })
-    //   const modal = screen.getByTestId('modaleFile')
-    //   expect(modal).toBeTruthy()
-    // });
+      // await waitFor(() => screen.getByTestId('icon-eye'));
+      // const iconEye = screen.getByTestId('icon-eye');
+      // iconEye.addEventListener('click', handleClickIconEye);
+      // userEvent.click(iconEye);
+
+      // expect(handleClickIconEye).toHaveBeenCalled();
+
+      // const modal = screen.getByTestId('modale');
+      // expect(modal).toBeTruthy();
+    });
   })
 })
