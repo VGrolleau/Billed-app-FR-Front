@@ -17,6 +17,7 @@ export default class NewBill {
   }
 
   handleChangeFile = e => {
+    this.fileName = "Coucou"
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const fileExtension = file.name.split('.').pop();

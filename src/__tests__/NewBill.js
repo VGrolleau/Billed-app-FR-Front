@@ -2,81 +2,94 @@
  * @jest-environment jsdom
  */
 
-import { screen, waitFor, fireEvent } from "@testing-library/dom"
+import { screen, fireEvent } from "@testing-library/dom"
+import { waitFor } from "@testing-library/dom"
 import NewBill from "../containers/NewBill.js"
-import mockStore from "../__mocks__/store";
+import mockStore from "../__mocks__/store"
+import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import router from "../app/Router.js";
 import userEvent from "@testing-library/user-event";
-import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
-
-
-const onNavigate = (pathname) => {
-  document.body.innerHTML = ROUTES({ pathname })
-}
+import BillsUI from "../views/BillsUI.js"
+jest.mock("../app/Store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
-  describe("When I am on NewBill Page", () => {
-    test("Then if the uploaded file is neither a png, jpg nor jpeg format, return a console error", async () => {
-      jest.spyOn(console, 'error').mockImplementation(() => { });
+  test("Then if the uploaded file is neither a png, jpg nor jpeg format, return a console error", async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => { });
 
-      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee'
-      }))
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.NewBill)
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+    window.localStorage.setItem('user', JSON.stringify({
+      type: 'Employee'
+    }))
+    const root = document.createElement("div")
+    root.setAttribute("id", "root")
+    document.body.append(root)
+    router()
+    window.onNavigate(ROUTES_PATH.NewBill)
 
-      const mockFile = new File(['mock'], 'mock.pdf', { type: 'pdf' });
-      await waitFor(() => {
-        screen.getByTestId('file');
-      });
+    const NewBillClass = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
+    const mockFile = new File(['mock'], 'mock.pdf', { type: 'pdf' });
+    await waitFor(() => {
+      screen.getByTestId('file');
+    });
+    const fileInput = screen.getByTestId('file');
+    userEvent.upload(fileInput, mockFile);
 
-      const fileInput = screen.getByTestId('file');
-      userEvent.upload(fileInput, mockFile);
+    const handleChangeFile = jest.fn((e) => NewBillClass.handleChangeFile(e));
+    fireEvent.click(fileInput, handleChangeFile);
+    expect(jest.spyOn(mockStore, "bills")).not.toHaveBeenCalled()
 
-      const NewBillClass = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
-      const handleChangeFile = jest.fn((e) => NewBillClass.handleChangeFile(e));
+    try {
+      fireEvent.click(fileInput, handleChangeFile);
+    } catch (error) {
+      expect(error).toMatch('Seuls les fichiers jpg, jpeg et png sont acceptés');
+    }
+  })
 
-      try {
-        fireEvent.click(fileInput, handleChangeFile);
-      } catch (error) {
-        expect(error).toMatch('Seuls les fichiers jpg, jpeg et png sont acceptés');
-      }
-    })
+  test("Then if the uploaded file format is good, the store is called and the file is uploaded", async () => {
+    jest.mock("../app/Store", () => mockStore);
 
-    /**
-     * TODO:
-     * faire le test pour le cas où le fichier est bien un jpg, jpeg ou png
-     */
-    // test("Then if the uploaded file format is good, the store is called and the file is uploaded", async () => {
-    //   jest.mock("../app/Store", () => mockStore);
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+    window.localStorage.setItem('user', JSON.stringify({
+      type: 'Employee'
+    }))
+    const root = document.createElement("div")
+    root.setAttribute("id", "root")
+    document.body.append(root)
+    router()
+    window.onNavigate(ROUTES_PATH.NewBill)
 
-    //   Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-    //   window.localStorage.setItem('user', JSON.stringify({
-    //     type: 'Employee'
-    //   }))
-    //   const root = document.createElement("div")
-    //   root.setAttribute("id", "root")
-    //   document.body.append(root)
-    //   router()
-    //   window.onNavigate(ROUTES_PATH.NewBill)
+    const mockFile = new File(['mock'], 'mock.jpg', { type: 'image/jpg' });
+    await waitFor(() => {
+      screen.getByTestId('file');
+    });
 
-    //   const mockFile = new File(['mock'], 'mock.jpg', { type: 'image/jpg' });
-    //   await waitFor(() => {
-    //     screen.getByTestId('file');
-    //   });
+    const fileInput = screen.getByTestId('file');
+    userEvent.upload(fileInput, mockFile);
 
-    //   const fileInput = screen.getByTestId('file');
-    //   userEvent.upload(fileInput, mockFile);
+    const NewBillClass = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
+    const handleChangeFile = jest.fn((e) => NewBillClass.handleChangeFile(e));
+    fireEvent.click(fileInput, handleChangeFile);
+    expect(jest.spyOn(mockStore, "bills")).toHaveBeenCalled();
+  })
 
-    //   const NewBillClass = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
-    //   const handleChangeFile = jest.fn((e) => NewBillClass.handleChangeFile(e));
-    //   fireEvent.click(fileInput, handleChangeFile);
-    //   expect(jest.spyOn(mockStore, "bills")).toHaveBeenCalled();
-    // })
+  test("Then if the form is submitted, the store is called and the bill is created", async () => {
+    jest.mock("../app/Store", () => mockStore);
+
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+    window.localStorage.setItem('user', JSON.stringify({
+      type: 'Employee'
+    }))
+    const root = document.createElement("div")
+    root.setAttribute("id", "root")
+    document.body.append(root)
+    router()
+    window.onNavigate(ROUTES_PATH.NewBill)
+
+    const NewBillClass = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
+    const handleSubmit = jest.fn((e) => NewBillClass.handleSubmit(e));
+    const form = screen.getByTestId('form-new-bill');
+    fireEvent.submit(form, handleSubmit);
+    expect(jest.spyOn(mockStore, "bills")).toHaveBeenCalled();
   })
 })
