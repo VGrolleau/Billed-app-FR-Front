@@ -60,9 +60,7 @@ describe("Given I am connected as an employee", () => {
     window.onNavigate(ROUTES_PATH.NewBill)
 
     const mockFile = new File(['mock'], 'mock.jpg', { type: 'image/jpg' });
-    await waitFor(() => {
-      screen.getByTestId('file');
-    });
+    await waitFor(() => screen.getByTestId('file'));
 
     const fileInput = screen.getByTestId('file');
     userEvent.upload(fileInput, mockFile);
@@ -73,7 +71,7 @@ describe("Given I am connected as an employee", () => {
     expect(jest.spyOn(mockStore, "bills")).toHaveBeenCalled();
   })
 
-  test("Then if the form is submitted, the store is called and the bill is created", async () => {
+  test("Then if the form is submitted, the store is called and the bill is created", () => {
     jest.mock("../app/Store", () => mockStore);
 
     Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -91,5 +89,81 @@ describe("Given I am connected as an employee", () => {
     const form = screen.getByTestId('form-new-bill');
     fireEvent.submit(form, handleSubmit);
     expect(jest.spyOn(mockStore, "bills")).toHaveBeenCalled();
+  })
+
+  test("then I upload file, API doesn't answer and return 500 error", async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => { });
+
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+    window.localStorage.setItem('user', JSON.stringify({
+      type: 'Employee'
+    }))
+    const root = document.createElement("div")
+    root.setAttribute("id", "root")
+    document.body.append(root)
+    router()
+    window.onNavigate(ROUTES_PATH.NewBill)
+
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+        create: () => {
+          return Promise.reject(new Error("Erreur 500"))
+        }
+      }
+    })
+
+    const NewBillClass = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
+    const mockFile = new File(['mock'], 'mock.jpg', { type: 'image/jpg' });
+    await waitFor(() => {
+      screen.getByTestId('file');
+    });
+    const fileInput = screen.getByTestId('file');
+    userEvent.upload(fileInput, mockFile);
+
+    const handleChangeFile = jest.fn((e) => NewBillClass.handleChangeFile(e));
+
+    try {
+      fireEvent.click(fileInput, handleChangeFile);
+    } catch (error) {
+      expect(error).toContain('500');
+    }
+  })
+
+  test("then I upload file, API doesn't answer and return 404 error", async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => { });
+
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+    window.localStorage.setItem('user', JSON.stringify({
+      type: 'Employee'
+    }))
+    const root = document.createElement("div")
+    root.setAttribute("id", "root")
+    document.body.append(root)
+    router()
+    window.onNavigate(ROUTES_PATH.NewBill)
+
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+        create: () => {
+          return Promise.reject(new Error("Erreur 404"))
+        }
+      }
+    })
+
+    const NewBillClass = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
+    const mockFile = new File(['mock'], 'mock.jpg', { type: 'image/jpg' });
+    await waitFor(() => {
+      screen.getByTestId('file');
+    });
+    const fileInput = screen.getByTestId('file');
+    userEvent.upload(fileInput, mockFile);
+
+    const handleChangeFile = jest.fn((e) => NewBillClass.handleChangeFile(e));
+
+    try {
+      fireEvent.click(fileInput, handleChangeFile);
+    } catch (error) {
+      expect(error).toContain('404');
+    }
   })
 })
