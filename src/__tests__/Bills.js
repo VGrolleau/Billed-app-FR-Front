@@ -67,9 +67,6 @@ describe("Given I am connected as an employee", () => {
       expect(window.location.href).toContain('#employee/bill/new')
     })
 
-    /**
-     * TODO: write a test for the modal
-     */
     test("Then I click on eye icon should open modal", async () => {
       $.fn.modal = jest.fn();
 
@@ -96,9 +93,6 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-/**
- * TODO: write integration tests for GET Bills
- */
 describe("Given I am a user connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     test("fetches bills from mock API GET", async () => {
