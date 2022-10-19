@@ -8,12 +8,15 @@ export default class NewBill {
     this.store = store
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
     formNewBill.addEventListener("submit", this.handleSubmit)
-    const file = this.document.querySelector(`input[data-testid="file"]`)
-    file.addEventListener("change", this.handleChangeFile)
+    this.file = this.document.querySelector(`input[data-testid="file"]`)
+    this.file.addEventListener("change", this.handleChangeFile)
     this.fileUrl = null
     this.fileName = null
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
+    this.p = document.getElementById("receipt-p");
+    this.p.style.display = "none";
+    this.p.style.color = "red";
   }
 
   handleChangeFile = e => {
@@ -28,7 +31,8 @@ export default class NewBill {
     formData.append('email', email)
 
     if (!(fileExtension === 'jpg' || fileExtension === 'jpeg' || fileExtension === 'png')) {
-      console.error('Seuls les fichiers jpg, jpeg et png sont acceptés')
+      console.error('Seuls les fichiers jpg, jpeg et png sont acceptés');
+
       return
     }
 
@@ -65,8 +69,16 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
-    this.updateBill(bill)
-    this.onNavigate(ROUTES_PATH['Bills'])
+
+    if (this.fileName !== null) {
+      this.p.style.display = "none";
+      this.file.classList.replace("red-border", "blue-border");
+      this.updateBill(bill)
+      this.onNavigate(ROUTES_PATH['Bills'])
+    } else {
+      this.p.style.display = "block";
+      this.file.classList.replace("blue-border", "red-border");
+    }
   }
 
   // not need to cover this function by tests

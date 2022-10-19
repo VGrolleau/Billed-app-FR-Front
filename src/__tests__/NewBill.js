@@ -71,7 +71,7 @@ describe("Given I am connected as an employee", () => {
     expect(jest.spyOn(mockStore, "bills")).toHaveBeenCalled();
   })
 
-  test("Then if the form is submitted, the store is called and the bill is created", () => {
+  test("Then if the form is submitted, the store is called and the bill is created", async () => {
     jest.mock("../app/Store", () => mockStore);
 
     Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -87,8 +87,20 @@ describe("Given I am connected as an employee", () => {
     const NewBillClass = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
     const handleSubmit = jest.fn((e) => NewBillClass.handleSubmit(e));
     const form = screen.getByTestId('form-new-bill');
+    const mockFile = new File(['mock'], 'mock.jpg', { type: 'image/jpg' });
+    NewBillClass.fileName = "fake.png"
+    await waitFor(() => screen.getByTestId('file'));
+    const fileInput = screen.getByTestId('file');
+    userEvent.upload(fileInput, mockFile);
+
+    const handleChangeFile = jest.fn((e) => NewBillClass.handleChangeFile(e));
+    fireEvent.click(fileInput, handleChangeFile);
+
     fireEvent.submit(form, handleSubmit);
+
     expect(jest.spyOn(mockStore, "bills")).toHaveBeenCalled();
+    expect(window.location.href).toContain(ROUTES_PATH['Bills']);
+    expect(NewBillClass.p.style.display).toContain("none");
   })
 
   test("then I upload file, API doesn't answer and return 500 error", async () => {
